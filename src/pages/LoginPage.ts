@@ -5,7 +5,11 @@ import BasePage from './BasePage';
  * TODO: Candidate should implement this page object
  */
 export default class LoginPage extends BasePage {
-  // TODO: Define selectors for username, password, login button, and error message
+  // Selectors for login page elements
+  private usernameInput = '[data-test="username"]';
+  private passwordInput = '[data-test="password"]';
+  private loginButton = '[data-test="login-button"]';
+  private errorMessage = '[data-test="error"]';
 
   /**
    * Opens the login page
@@ -18,20 +22,23 @@ export default class LoginPage extends BasePage {
    * Login with the given credentials
    * @param username Username
    * @param password Password
-   * TODO: Implement this method
    */
   async login(username: string, password: string): Promise<void> {
-    // TODO: Implement login functionality
-    throw new Error('Method not implemented');
+    await this.setValue(this.usernameInput, username);
+    await this.setValue(this.passwordInput, password);
+    await this.click(this.loginButton);
   }
 
   /**
    * Gets the error message text
    * @returns Error message text
-   * TODO: Implement this method
    */
   async getErrorMessage(): Promise<string> {
-    // TODO: Implement getting error message
-    throw new Error('Method not implemented');
+    try {
+      await $(this.errorMessage).waitForDisplayed({ timeout: 3000 });
+      return await this.getText(this.errorMessage);
+    } catch {
+      return '';
+    }
   }
 }

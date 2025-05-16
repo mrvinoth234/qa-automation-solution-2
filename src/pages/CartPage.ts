@@ -5,44 +5,47 @@ import BasePage from './BasePage';
  * TODO: Candidate should implement this page object
  */
 export default class CartPage extends BasePage {
-  // TODO: Define selectors for cart items, checkout button, etc.
+  // Selectors for cart page elements
+  private cartItem = '.cart_item';
+  private cartItemName = '.inventory_item_name';
+  private removeButton: (itemName: string) => string = (itemName: string): string =>
+    `button[id="remove-${itemName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')}"]`;
+  private checkoutButton = '[data-test="checkout"]';
 
   /**
    * Checks if the page is loaded
    * @returns True if the page is loaded
-   * TODO: Implement this method
    */
   async isLoaded(): Promise<boolean> {
-    // TODO: Implement check if cart page is loaded
-    throw new Error('Method not implemented');
+    return await $(this.cartItem).isDisplayed();
   }
 
   /**
    * Gets the list of items in the cart
    * @returns Array of item names in the cart
-   * TODO: Implement this method
    */
   async getCartItems(): Promise<string[]> {
-    // TODO: Implement getting cart items
-    throw new Error('Method not implemented');
+    const items = await $$(this.cartItemName);
+    const names: string[] = [];
+    for (const el of items) {
+      names.push(await el.getText());
+    }
+    return names;
   }
 
   /**
    * Removes an item from the cart by its name
    * @param itemName Name of the item to remove
-   * TODO: Implement this method
    */
   async removeItem(itemName: string): Promise<void> {
-    // TODO: Implement removing item from cart
-    throw new Error('Method not implemented');
+    const buttonSelector = this.removeButton(itemName);
+    await this.click(buttonSelector);
   }
 
   /**
    * Proceeds to checkout
-   * TODO: Implement this method
    */
   async checkout(): Promise<void> {
-    // TODO: Implement checkout
-    throw new Error('Method not implemented');
+    await this.click(this.checkoutButton);
   }
 }

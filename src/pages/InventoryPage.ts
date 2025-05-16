@@ -5,44 +5,57 @@ import BasePage from './BasePage';
  * TODO: Candidate should implement this page object
  */
 export default class InventoryPage extends BasePage {
-  // TODO: Define selectors for inventory items, add to cart buttons, cart icon, etc.
+  // Selectors for inventory page elements
+  private inventoryItem = '.inventory_item';
+  private addToCartButton: (itemName: string) => string = (itemName: string): string =>
+    `button[id="add-to-cart-${itemName.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '')}"]`;
+  private cartIcon = '.shopping_cart_link';
+  private cartBadge = '.shopping_cart_badge';
 
   /**
    * Checks if the page is loaded
    * @returns True if the page is loaded
-   * TODO: Implement this method
    */
   async isLoaded(): Promise<boolean> {
-    // TODO: Implement check if inventory page is loaded
-    throw new Error('Method not implemented');
+    return await $(this.inventoryItem).isDisplayed();
   }
 
   /**
    * Adds an item to the cart by its name
    * @param itemName Name of the item to add
-   * TODO: Implement this method
    */
   async addItemToCart(itemName: string): Promise<void> {
-    // TODO: Implement adding item to cart
-    throw new Error('Method not implemented');
+    const buttonSelector = this.addToCartButton(itemName);
+    const addButton = await $(buttonSelector);
+    if (await addButton.isExisting() && await addButton.isDisplayed()) {
+      await this.click(buttonSelector);
+      // Wait for the cart badge to update after adding
+      await browser.waitUntil(async () => {
+        const badge = await $(this.cartBadge);
+        return (await badge.isExisting()) && (await badge.getText()) !== '';
+      }, { timeout: 5000, timeoutMsg: 'Cart badge did not appear after adding item' });
+    }
+    // If button does not exist, item is already in cart; do nothing
   }
 
   /**
    * Gets the number of items in the cart
    * @returns Number of items in the cart
-   * TODO: Implement this method
    */
-  async getCartItemCount(): Promise<number> {
-    // TODO: Implement getting cart item count
-    throw new Error('Method not implemented');
+  async getCartItemCount(): Promise<string> {
+    // Wait for the cart badge to exist or return '0' if not present
+    try {
+      await $(this.cartBadge).waitForExist({ timeout: 3000 });
+      return await this.getText(this.cartBadge);
+    } catch {
+      return '0';
+    }
   }
 
   /**
    * Navigates to the cart page
-   * TODO: Implement this method
    */
   async goToCart(): Promise<void> {
-    // TODO: Implement navigation to cart
-    throw new Error('Method not implemented');
+    await this.click(this.cartIcon);
   }
 }

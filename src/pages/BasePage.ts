@@ -9,7 +9,6 @@ export default class BasePage {
   async open(path: string = ''): Promise<void> {
     await browser.url(path);
   }
-
   /**
    * Waits for an element to be displayed
    * @param selector Element selector
